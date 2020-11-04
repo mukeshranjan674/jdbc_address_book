@@ -40,10 +40,11 @@ public class AddressBookServiceDB {
 					+ "c.phone_no, c.email, c.contact_type, "
 					+ "d.address, d.city, d.state, d.zip, a.book_id, b.date_added from "
 					+ "address_book a, person b, contact_details c, person_address d " + "where "
-					+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and " + "b.contact_id = d.contact_id ";
+					+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and "
+					+ "b.contact_id = d.contact_id ";
 			ResultSet resultSet = statement.executeQuery(sql);
 			contacts = this.getContacts(resultSet);
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 		}
 		return contacts;
 	}
@@ -133,22 +134,23 @@ public class AddressBookServiceDB {
 	 * @param start_date
 	 * @param end_date
 	 * @return
-	 * @throws AddressBookException 
+	 * @throws AddressBookException
 	 */
 	public List<Contact> getContacts(Date start_date, Date end_date) throws AddressBookException {
 		List<Contact> contacts = new ArrayList<Contact>();
 		Connection connection = new DBConnection().getConnection();
 		try {
 			Statement statement = connection.createStatement();
-			String sql = String.format("select a.name, b.contact_id, b.first_name, b.last_name, "
-					+ "c.phone_no, c.email, c.contact_type, "
-					+ "d.address, d.city, d.state, d.zip, a.book_id, b.date_added from "
-					+ "address_book a, person b, contact_details c, person_address d " + "where "
-					+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and " + "b.contact_id = d.contact_id "
-					+ "and b.date_added between '%s' and '%s'", start_date, end_date);
+			String sql = String.format(
+					"select a.name, b.contact_id, b.first_name, b.last_name, " + "c.phone_no, c.email, c.contact_type, "
+							+ "d.address, d.city, d.state, d.zip, a.book_id, b.date_added from "
+							+ "address_book a, person b, contact_details c, person_address d " + "where "
+							+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and "
+							+ "b.contact_id = d.contact_id " + "and b.date_added between '%s' and '%s'",
+					start_date, end_date);
 			ResultSet resultSet = statement.executeQuery(sql);
 			contacts = this.getContacts(resultSet);
-		}catch (SQLException e) {
+		} catch (SQLException e) {
 		}
 		return contacts;
 	}
@@ -179,6 +181,61 @@ public class AddressBookServiceDB {
 			throw new AddressBookException("Wrong Query", Type.WRONG_QUERY);
 		}
 		return contacts;
+	}
+
+	/**
+	 * UC4
+	 * 
+	 * @param city
+	 * @return
+	 * @throws AddressBookException
+	 */
+	public int countByCity(String city) throws AddressBookException {
+		Connection connection = null;
+		try {
+			connection = new DBConnection().getConnection();
+			Statement statement = connection.createStatement();
+			String sql = String.format("select count(contact_id) from person_address where city = '%s' group by city", city);
+			ResultSet resultSet = statement.executeQuery(sql);
+			return this.getCount(resultSet);
+		} catch (SQLException e) {
+			throw new AddressBookException("Wrong Query", Type.WRONG_QUERY);
+		}finally {
+			if(connection != null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+		}
+	}
+
+	public int countByState(String state) throws AddressBookException {
+		Connection connection = null;
+		try {
+			connection = new DBConnection().getConnection();
+			Statement statement = connection.createStatement();
+			String sql = String.format("select count(contact_id) from person_address where state = '%s' group by state", state);
+			ResultSet resultSet = statement.executeQuery(sql);
+			return this.getCount(resultSet);
+		} catch (SQLException e) {
+			throw new AddressBookException("Wrong Query", Type.WRONG_QUERY);
+		}finally {
+			if(connection != null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+		}
+	}
+
+	private int getCount(ResultSet resultSet) {
+		int count_of_person = 0;
+		try {
+			while (resultSet.next())
+				count_of_person = resultSet.getInt(1);
+		} catch (SQLException e) {
+		}
+		return count_of_person;
 	}
 
 }

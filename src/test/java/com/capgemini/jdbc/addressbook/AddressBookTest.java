@@ -71,7 +71,7 @@ public class AddressBookTest {
 		} catch (AddressBookException e) {
 		}
 	}
-	
+
 	/**
 	 * UC3
 	 */
@@ -83,6 +83,29 @@ public class AddressBookTest {
 		try {
 			contacts = addressBookService.getContacts(start_date, end_date);
 			assertEquals(3, contacts.size());
+		} catch (AddressBookException e) {
+		}
+	}
+
+	/**
+	 * UC4
+	 */
+	@Test
+	public void whenGivenCityShouldReturnCountOfPerson() {
+		String city = "dhanbad";
+		try {
+			int count = addressBookService.countByCity(city);
+			assertEquals(2, count);
+		} catch (AddressBookException e) {
+		}
+	}
+
+	@Test
+	public void whenGivenStateShouldReturnCountOfPerson() {
+		String state = "jharkhand";
+		try {
+			int count = addressBookService.countByState(state);
+			assertEquals(3, count);
 		} catch (AddressBookException e) {
 		}
 	}

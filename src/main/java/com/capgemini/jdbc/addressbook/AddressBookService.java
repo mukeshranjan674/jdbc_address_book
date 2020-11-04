@@ -46,9 +46,24 @@ public class AddressBookService {
 	 * @param start_date
 	 * @param end_date
 	 * @return
-	 * @throws AddressBookException 
+	 * @throws AddressBookException
 	 */
 	public List<Contact> getContacts(Date start_date, Date end_date) throws AddressBookException {
 		return AddressBookServiceDB.getInstance().getContacts(start_date, end_date);
+	}
+
+	/**
+	 * UC4
+	 * 
+	 * @param city
+	 * @return
+	 * @throws AddressBookException
+	 */
+	public int countByCity(String city) throws AddressBookException {
+		return AddressBookServiceDB.getInstance().countByCity(city);
+	}
+
+	public int countByState(String state) throws AddressBookException {
+		return AddressBookServiceDB.getInstance().countByState(state);
 	}
 }
