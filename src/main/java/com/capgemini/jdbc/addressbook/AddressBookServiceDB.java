@@ -49,57 +49,6 @@ public class AddressBookServiceDB {
 		return contacts;
 	}
 
-	public void addContact(Contact contact) throws AddressBookException {
-		Connection connection = null;
-		List<Contact> contacts = this.getContacts();
-		try {
-			boolean addressBookExist = contacts.stream()
-					.anyMatch(n -> n.getAddress_book_id() == contact.getAddress_book_id());
-			connection = new DBConnection().getConnection();
-			connection.setAutoCommit(false);
-			if (!addressBookExist) {
-				Statement statement = connection.createStatement();
-				String sql = String.format("insert into address_book values (%s, '%s')", contact.getAddress_book_id(),
-						contact.getAddress_book_name());
-				statement.executeUpdate(sql);
-			}
-		} catch (SQLException e) {
-		}
-
-		try {
-			String sql = String.format(
-					"insert into person (book_id, contact_id, first_name, last_name) values " + "(%s, %s, '%s', '%s')",
-					contact.getAddress_book_id(), contact.getContact_id(), contact.getFirst_name(),
-					contact.getLast_name());
-			Statement statement = connection.createStatement();
-			statement.executeUpdate(sql);
-			sql = String.format(
-					"insert into contact_details (contact_id, phone_no, email, contact_type) values "
-							+ "(%s, '%s', '%s', '%s')",
-					contact.getContact_id(), contact.getPhone_number(), contact.getEmail(), contact.getContact_type());
-			statement = connection.createStatement();
-			statement.executeUpdate(sql);
-			sql = String.format(
-					"insert into person_address (contact_id, address, city, state, zip) values "
-							+ "(%s, '%s', '%s', '%s', '%s')",
-					contact.getContact_id(), contact.getAddress(), contact.getCity(), contact.getState(),
-					contact.getZip());
-			statement = connection.createStatement();
-			statement.executeUpdate(sql);
-		} catch (SQLException e) {
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-			}
-			throw new AddressBookException("contact exist", Type.INSERTION_ERROR);
-		}
-		try {
-			connection.commit();
-		} catch (SQLException e) {
-			throw new AddressBookException("contact exist", Type.INSERTION_ERROR);
-		}
-	}
-
 	/**
 	 * UC2
 	 * 
@@ -195,13 +144,14 @@ public class AddressBookServiceDB {
 		try {
 			connection = new DBConnection().getConnection();
 			Statement statement = connection.createStatement();
-			String sql = String.format("select count(contact_id) from person_address where city = '%s' group by city", city);
+			String sql = String.format("select count(contact_id) from person_address where city = '%s' group by city",
+					city);
 			ResultSet resultSet = statement.executeQuery(sql);
 			return this.getCount(resultSet);
 		} catch (SQLException e) {
 			throw new AddressBookException("Wrong Query", Type.WRONG_QUERY);
-		}finally {
-			if(connection != null)
+		} finally {
+			if (connection != null)
 				try {
 					connection.close();
 				} catch (SQLException e) {
@@ -214,13 +164,14 @@ public class AddressBookServiceDB {
 		try {
 			connection = new DBConnection().getConnection();
 			Statement statement = connection.createStatement();
-			String sql = String.format("select count(contact_id) from person_address where state = '%s' group by state", state);
+			String sql = String.format("select count(contact_id) from person_address where state = '%s' group by state",
+					state);
 			ResultSet resultSet = statement.executeQuery(sql);
 			return this.getCount(resultSet);
 		} catch (SQLException e) {
 			throw new AddressBookException("Wrong Query", Type.WRONG_QUERY);
-		}finally {
-			if(connection != null)
+		} finally {
+			if (connection != null)
 				try {
 					connection.close();
 				} catch (SQLException e) {
@@ -238,4 +189,66 @@ public class AddressBookServiceDB {
 		return count_of_person;
 	}
 
+	/**
+	 * UC5
+	 * 
+	 * @param contact
+	 * @throws AddressBookException
+	 */
+	public void addContact(Contact contact) throws AddressBookException {
+		Connection connection = null;
+		List<Contact> contacts = this.getContacts();
+		try {
+			boolean addressBookExist = contacts.stream()
+					.anyMatch(n -> n.getAddress_book_id() == contact.getAddress_book_id());
+			connection = new DBConnection().getConnection();
+			connection.setAutoCommit(false);
+			if (!addressBookExist) {
+				Statement statement = connection.createStatement();
+				String sql = String.format("insert into address_book values (%s, '%s')", contact.getAddress_book_id(),
+						contact.getAddress_book_name());
+				statement.executeUpdate(sql);
+			}
+		} catch (SQLException e) {
+		}
+
+		try {
+			String sql = String.format(
+					"insert into person (book_id, contact_id, first_name, last_name) values " + "(%s, %s, '%s', '%s')",
+					contact.getAddress_book_id(), contact.getContact_id(), contact.getFirst_name(),
+					contact.getLast_name());
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			sql = String.format(
+					"insert into contact_details (contact_id, phone_no, email, contact_type) values "
+							+ "(%s, '%s', '%s', '%s')",
+					contact.getContact_id(), contact.getPhone_number(), contact.getEmail(), contact.getContact_type());
+			statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			sql = String.format(
+					"insert into person_address (contact_id, address, city, state, zip) values "
+							+ "(%s, '%s', '%s', '%s', '%s')",
+					contact.getContact_id(), contact.getAddress(), contact.getCity(), contact.getState(),
+					contact.getZip());
+			statement = connection.createStatement();
+			statement.executeUpdate(sql);
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+			}
+			throw new AddressBookException("contact exist", Type.INSERTION_ERROR);
+		}
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			throw new AddressBookException("contact exist", Type.INSERTION_ERROR);
+		} finally {
+			if (connection != null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+		}
+	}
 }

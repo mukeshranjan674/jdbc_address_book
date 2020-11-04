@@ -15,6 +15,12 @@ public class AddressBookService {
 		return AddressBookServiceDB.getInstance().getContacts();
 	}
 
+	/**
+	 * UC5
+	 * 
+	 * @param contact
+	 * @throws AddressBookException
+	 */
 	public void addContact(Contact contact) throws AddressBookException {
 		AddressBookServiceDB.getInstance().addContact(contact);
 	}

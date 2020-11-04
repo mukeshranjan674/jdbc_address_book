@@ -15,8 +15,9 @@ public class Contact {
 	private String zip;
 	private String date_added;
 
-	public Contact(String addBook_name,int add_id, int contact_id, String first_name, String last_name, String phone_number,
-			String email, String contact_type, String address, String city, String state, String zip, String date_added) {
+	public Contact(String addBook_name, int add_id, int contact_id, String first_name, String last_name,
+			String phone_number, String email, String contact_type, String address, String city, String state,
+			String zip, String date_added) {
 		this.address_book_name = addBook_name;
 		this.address_book_id = add_id;
 		this.contact_id = contact_id;
