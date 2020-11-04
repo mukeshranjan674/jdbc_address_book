@@ -2,7 +2,7 @@ package com.capgemini.jdbc.addressbook;
 
 public class AddressBookException extends Exception {
 	public enum Type {
-		CONNECTION_ERROR
+		CONNECTION_ERROR, INSERTION_ERROR, UPDATION_ERROR
 	}
 
 	private Type type;
