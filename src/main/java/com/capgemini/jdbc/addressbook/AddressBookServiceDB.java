@@ -1,6 +1,7 @@
 package com.capgemini.jdbc.addressbook;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,33 +37,14 @@ public class AddressBookServiceDB {
 		try {
 			Statement statement = connection.createStatement();
 			String sql = "select a.name, b.contact_id, b.first_name, b.last_name, "
-					+ "c.phone_no, c.email, c.contact_type, " + "d.address, d.city, d.state, d.zip, a.book_id from "
+					+ "c.phone_no, c.email, c.contact_type, "
+					+ "d.address, d.city, d.state, d.zip, a.book_id, b.date_added from "
 					+ "address_book a, person b, contact_details c, person_address d " + "where "
-					+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and "
-					+ "b.contact_id = d.contact_id ";
+					+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and " + "b.contact_id = d.contact_id ";
 			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				String address_book_name = resultSet.getString(1);
-				int contact_id = resultSet.getInt(2);
-				String first_name = resultSet.getString(3);
-				String last_name = resultSet.getString(4);
-				String phone_number = resultSet.getString(5);
-				String email = resultSet.getString(6);
-				String contact_type = resultSet.getString(7);
-				String address = resultSet.getString(8);
-				String city = resultSet.getString(9);
-				String state = resultSet.getString(10);
-				String zip = resultSet.getString(11);
-				int address_book_id = resultSet.getInt(12);
-
-				Contact contact = new Contact(address_book_name, address_book_id, contact_id, first_name, last_name,
-						phone_number, email, contact_type, address, city, state, zip);
-				contacts.add(contact);
-			}
-		} catch (SQLException e) {
-			throw new AddressBookException("Statement Creation Failed !!", Type.CONNECTION_ERROR);
+			contacts = this.getContacts(resultSet);
+		}catch (SQLException e) {
 		}
-
 		return contacts;
 	}
 
@@ -143,6 +125,60 @@ public class AddressBookServiceDB {
 		} catch (SQLException e) {
 			throw new AddressBookException("contact exist", Type.UPDATION_ERROR);
 		}
+	}
+
+	/**
+	 * UC3
+	 * 
+	 * @param start_date
+	 * @param end_date
+	 * @return
+	 * @throws AddressBookException 
+	 */
+	public List<Contact> getContacts(Date start_date, Date end_date) throws AddressBookException {
+		List<Contact> contacts = new ArrayList<Contact>();
+		Connection connection = new DBConnection().getConnection();
+		try {
+			Statement statement = connection.createStatement();
+			String sql = String.format("select a.name, b.contact_id, b.first_name, b.last_name, "
+					+ "c.phone_no, c.email, c.contact_type, "
+					+ "d.address, d.city, d.state, d.zip, a.book_id, b.date_added from "
+					+ "address_book a, person b, contact_details c, person_address d " + "where "
+					+ "a.book_id = b.book_id and " + "b.contact_id = c.contact_id and " + "b.contact_id = d.contact_id "
+					+ "and b.date_added between '%s' and '%s'", start_date, end_date);
+			ResultSet resultSet = statement.executeQuery(sql);
+			contacts = this.getContacts(resultSet);
+		}catch (SQLException e) {
+		}
+		return contacts;
+	}
+
+	private List<Contact> getContacts(ResultSet resultSet) throws AddressBookException {
+		List<Contact> contacts = new ArrayList<Contact>();
+		try {
+			while (resultSet.next()) {
+				String address_book_name = resultSet.getString(1);
+				int contact_id = resultSet.getInt(2);
+				String first_name = resultSet.getString(3);
+				String last_name = resultSet.getString(4);
+				String phone_number = resultSet.getString(5);
+				String email = resultSet.getString(6);
+				String contact_type = resultSet.getString(7);
+				String address = resultSet.getString(8);
+				String city = resultSet.getString(9);
+				String state = resultSet.getString(10);
+				String zip = resultSet.getString(11);
+				int address_book_id = resultSet.getInt(12);
+				String date_added = resultSet.getString(13);
+
+				Contact contact = new Contact(address_book_name, address_book_id, contact_id, first_name, last_name,
+						phone_number, email, contact_type, address, city, state, zip, date_added);
+				contacts.add(contact);
+			}
+		} catch (SQLException e) {
+			throw new AddressBookException("Wrong Query", Type.WRONG_QUERY);
+		}
+		return contacts;
 	}
 
 }

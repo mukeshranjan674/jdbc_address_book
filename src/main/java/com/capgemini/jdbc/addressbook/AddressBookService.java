@@ -1,5 +1,6 @@
 package com.capgemini.jdbc.addressbook;
 
+import java.sql.Date;
 import java.util.List;
 
 public class AddressBookService {
@@ -37,5 +38,17 @@ public class AddressBookService {
 	 */
 	public void updateContact(int contact_id, String phone_number, String email) throws AddressBookException {
 		AddressBookServiceDB.getInstance().updateContact(contact_id, phone_number, email);
+	}
+
+	/**
+	 * UC3
+	 * 
+	 * @param start_date
+	 * @param end_date
+	 * @return
+	 * @throws AddressBookException 
+	 */
+	public List<Contact> getContacts(Date start_date, Date end_date) throws AddressBookException {
+		return AddressBookServiceDB.getInstance().getContacts(start_date, end_date);
 	}
 }
