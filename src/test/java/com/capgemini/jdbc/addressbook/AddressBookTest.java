@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Date;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -109,6 +112,34 @@ public class AddressBookTest {
 			assertTrue(result);
 		} catch (AddressBookException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * UC6
+	 */
+	public List<Contact> getListOfContacts() {
+		Contact[] arrOfContacts = {
+				new Contact("book1", 100, 1002, "Mike", "Moson", "987654310", "mike@gmail.com", "family", "California",
+						"CA", "CA city", "898989", "2020-08-08"),
+				new Contact("book3", 102, 1003, "Nike", "Noson", "987654310", "nike@gmail.com", "friend", "California",
+						"CA", "CA city", "898989", "2020-08-08"),
+				new Contact("book2", 101, 1004, "Sherpa", "Moson", "987654310", "sherpa@gmail.com", "family",
+						"California", "CA", "CA city", "898989", "2020-08-08") };
+		return Arrays.asList(arrOfContacts);
+	}
+
+	@Test
+	public void givenListOfContactsShouldGetAddedToTheDatabase() {
+		try {
+			Instant start = Instant.now();
+			addressBookService.addMultipleContacts(getListOfContacts());
+			Instant end = Instant.now();
+			System.out.println("Duration with Thread : " + Duration.between(start, end));
+			List<Contact> contacts = addressBookService.getContacts();
+			assertEquals(7, contacts.size());
+		} catch (AddressBookException e) {
 			e.printStackTrace();
 		}
 	}

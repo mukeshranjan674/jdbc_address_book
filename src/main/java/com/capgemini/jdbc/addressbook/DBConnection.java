@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 public class DBConnection {
+	static int connectionCounter = 0;
 	String jdbcURL = "jdbc:mysql://localhost:3306/address_book_service?useSSL=false";
 	String userName = "root";
 	String password = "Mukesh@2016";
@@ -31,11 +32,14 @@ public class DBConnection {
 		}
 	}
 
-	public Connection getConnection() {
+	public synchronized Connection getConnection() {
+		connectionCounter++;
 		try {
-			System.out.println("Connecting database" + jdbcURL);
+			System.out.println("Processing Thread : " + Thread.currentThread().getName() +
+							    " Conntecting to database wiht ID : " + connectionCounter);
 			connection = DriverManager.getConnection(jdbcURL, userName, password);
-			System.out.println("Connection is successful !!" + connection);
+			System.out.println("Processing Thread : " + Thread.currentThread().getName() +
+								" Connection is successful !!" + connection);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

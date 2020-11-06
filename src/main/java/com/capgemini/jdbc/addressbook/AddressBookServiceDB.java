@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.capgemini.jdbc.addressbook.AddressBookException.Type;
 
@@ -195,9 +197,10 @@ public class AddressBookServiceDB {
 	 * @param contact
 	 * @throws AddressBookException
 	 */
-	public void addContact(Contact contact) throws AddressBookException {
+	public synchronized void addContact(Contact contact) throws AddressBookException {
 		Connection connection = null;
 		List<Contact> contacts = this.getContacts();
+		System.out.println("Contact Being Added : " + contact.getFirst_name());
 		try {
 			boolean addressBookExist = contacts.stream()
 					.anyMatch(n -> n.getAddress_book_id() == contact.getAddress_book_id());
@@ -214,9 +217,10 @@ public class AddressBookServiceDB {
 
 		try {
 			String sql = String.format(
-					"insert into person (book_id, contact_id, first_name, last_name) values " + "(%s, %s, '%s', '%s')",
+					"insert into person (book_id, contact_id, first_name, last_name, date_added) values "
+							+ "(%s, %s, '%s', '%s', '%s')",
 					contact.getAddress_book_id(), contact.getContact_id(), contact.getFirst_name(),
-					contact.getLast_name());
+					contact.getLast_name(), contact.getDate_added());
 			Statement statement = connection.createStatement();
 			statement.executeUpdate(sql);
 			sql = String.format(
@@ -241,6 +245,7 @@ public class AddressBookServiceDB {
 		}
 		try {
 			connection.commit();
+			System.out.println("Contact Added : " + contact.getFirst_name());
 		} catch (SQLException e) {
 			throw new AddressBookException("contact exist", Type.INSERTION_ERROR);
 		} finally {
@@ -249,6 +254,36 @@ public class AddressBookServiceDB {
 					connection.close();
 				} catch (SQLException e) {
 				}
+		}
+	}
+
+	/**
+	 * UC6
+	 * 
+	 * @param listOfContacts
+	 */
+	public void addMultipleContacts(List<Contact> listOfContacts) {
+		Map<Integer, Boolean> addressBookStatus = new HashMap<>();
+		for (Contact contact : listOfContacts) {
+			Runnable task = () -> {
+				addressBookStatus.put(contact.hashCode(), false);
+				try {
+					this.addContact(contact);
+				} catch (AddressBookException a) {
+					a.printStackTrace();
+				}
+				addressBookStatus.put(contact.hashCode(), true);
+			};
+			Thread thread = new Thread(task, contact.getFirst_name());
+			thread.setPriority(10);
+			thread.start();
+		}
+		while (addressBookStatus.containsValue(false)) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

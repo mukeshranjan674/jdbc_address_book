@@ -72,4 +72,13 @@ public class AddressBookService {
 	public int countByState(String state) throws AddressBookException {
 		return AddressBookServiceDB.getInstance().countByState(state);
 	}
+
+	/**
+	 * UC6
+	 * 
+	 * @param listOfContacts
+	 */
+	public void addMultipleContacts(List<Contact> listOfContacts) {
+		AddressBookServiceDB.getInstance().addMultipleContacts(listOfContacts);
+	}
 }
