@@ -1,0 +1,50 @@
+{
+  "contacts": [
+    {
+      "id": 1,
+      "first_name": "Rahul",
+      "last_name": "kumar",
+      "address": "sijua, dhanbad",
+      "city": "dhanbad",
+      "state": "jharkhand",
+      "zip": "821256",
+      "phone_number": "9898989898",
+      "email": "rahul@gmail.com"
+    },
+    {
+      "id": 2,
+      "first_name": "Rosy",
+      "last_name": "kumari",
+      "address": "sijua, dhanbad",
+      "city": "dhanbad",
+      "state": "jharkhand",
+      "zip": "821256",
+      "phone_number": "9898989898",
+      "email": "rosy@gmail.com"
+    },
+    {
+      "id": 3,
+      "first_name": "yash",
+      "last_name": "kumar",
+      "address": "sijua, dhanbad",
+      "city": "dhanbad",
+      "state": "jharkhand",
+      "zip": "821256",
+      "phone_number": "9898989898",
+      "email": "yash@gmail.com"
+    },
+    {
+      "address_book_id": 0,
+      "contact_id": 0,
+      "first_name": "Ramesh",
+      "last_name": "Kumar",
+      "phone_number": "854523200",
+      "email": "ramesh@gmail.com",
+      "address": "Sijua, dhanbad",
+      "city": "dhanbad",
+      "state": "jharkhand",
+      "zip": "898989",
+      "id": 4
+    }
+  ]
+}

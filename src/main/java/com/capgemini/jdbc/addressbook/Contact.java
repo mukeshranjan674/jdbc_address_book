@@ -32,6 +32,18 @@ public class Contact {
 		this.zip = zip;
 		this.date_added = date_added;
 	}
+	
+	public Contact(String first_name, String last_name, String address, String city, String state, String zip,
+				   String phone_number, String email) {
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.phone_number = phone_number;
+		this.email = email;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+	}
 
 	public int getAddress_book_id() {
 		return address_book_id;
