@@ -40,7 +40,7 @@ public class AddressBookServiceRestApiTest {
 		int result = addressBookServiceRestAPI.countEntries();
 		assertEquals(4, result);
 	}
-	
+
 	@Test
 	public void givenContactWhenAddedToJSONServerShouldMatchWithStatusCode() {
 		Contact contact = new Contact("Ramesh", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989",
@@ -57,12 +57,27 @@ public class AddressBookServiceRestApiTest {
 	@Test
 	public void givenContactListShouldGetAddedToTheJsonServer() {
 		List<Contact> contacts = this.getNewContactList();
-		for(Contact contact : contacts) {
+		for (Contact contact : contacts) {
 			addressBookServiceRestAPI.addContact(contact);
 			Response response = this.addContactToJsonServer(contact);
 			boolean result = response.getStatusCode() == 201;
 			assertTrue(result);
 		}
+	}
+
+	/**
+	 * UC9
+	 */
+	@Test
+	public void givenContactShouldGetUpdatedInTheJsonServer() {
+		Contact contact = new Contact("Suresh", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989",
+				"854523200", "suresh@gmail.com");
+		String contactJson = new Gson().toJson(contact);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(contactJson);
+		Response response = request.put("/contacts" + "/7");
+		assertEquals(200, response.getStatusCode());
 	}
 
 	private List<Contact> getNewContactList() {
