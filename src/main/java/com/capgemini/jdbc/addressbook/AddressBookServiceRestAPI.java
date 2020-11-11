@@ -17,4 +17,13 @@ public class AddressBookServiceRestAPI {
 	public void addContact(Contact contact) {
 		contactList.add(contact);
 	}
+
+	public Contact getContact(String name) {
+		Contact contact = contactList.stream().filter(con -> con.getFirst_name().equals(name)).findAny().orElse(null);
+		return contact;
+	}
+
+	public void deleteContact(Contact contact) {
+		contactList.remove(contact);
+	}
 }

@@ -80,6 +80,19 @@ public class AddressBookServiceRestApiTest {
 		assertEquals(200, response.getStatusCode());
 	}
 
+	/**
+	 * UC10
+	 */
+	@Test
+	public void givenContactShouldGetDeletedFromJsonServer() {
+		Contact contact = addressBookServiceRestAPI.getContact("Suresh");
+		addressBookServiceRestAPI.deleteContact(contact);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		Response response = request.delete("/contacts" + "/7");
+		assertEquals(200, response.getStatusCode());
+	}
+
 	private List<Contact> getNewContactList() {
 		Contact[] contacts = {
 				new Contact("Kush", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989", "854523200",
