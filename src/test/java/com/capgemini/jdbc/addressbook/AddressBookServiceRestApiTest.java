@@ -18,20 +18,20 @@ import io.restassured.specification.RequestSpecification;
 public class AddressBookServiceRestApiTest {
 	AddressBookServiceRestAPI addressBookServiceRestAPI;
 	List<Contact> contacts;
-	
+
 	@Before
 	public void Setup() {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = 3000;
-		addressBookServiceRestAPI = new AddressBookServiceRestAPI(getContactList());
+		addressBookServiceRestAPI = new AddressBookServiceRestAPI(getContactListFromJsonServer());
 	}
 
-	private List<Contact> getContactList() {
+	private List<Contact> getContactListFromJsonServer() {
 		Response response = RestAssured.get("/contacts");
 		Contact[] contacts = new Gson().fromJson(response.asString(), Contact[].class);
 		return Arrays.asList(contacts);
 	}
-	
+
 	/**
 	 * UC7
 	 */
@@ -40,16 +40,40 @@ public class AddressBookServiceRestApiTest {
 		int result = addressBookServiceRestAPI.countEntries();
 		assertEquals(4, result);
 	}
-
+	
 	@Test
 	public void givenContactWhenAddedToJSONServerShouldMatchWithStatusCode() {
-		Contact contact = new Contact("Ramesh", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", 
-									  "898989", "854523200", "ramesh@gmail.com");
+		Contact contact = new Contact("Ramesh", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989",
+				"854523200", "ramesh@gmail.com");
 		addressBookServiceRestAPI.addContact(contact);
-		Response response = addContactToJsonServer(contact);
-		boolean result = response.getStatusCode() == 201 && 
-						 addressBookServiceRestAPI.countEntries() == 5;
+		Response response = this.addContactToJsonServer(contact);
+		boolean result = response.getStatusCode() == 201 && addressBookServiceRestAPI.countEntries() == 5;
 		assertTrue(result);
+	}
+
+	/**
+	 * UC8
+	 */
+	@Test
+	public void givenContactListShouldGetAddedToTheJsonServer() {
+		List<Contact> contacts = this.getNewContactList();
+		for(Contact contact : contacts) {
+			addressBookServiceRestAPI.addContact(contact);
+			Response response = this.addContactToJsonServer(contact);
+			boolean result = response.getStatusCode() == 201;
+			assertTrue(result);
+		}
+	}
+
+	private List<Contact> getNewContactList() {
+		Contact[] contacts = {
+				new Contact("Kush", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989", "854523200",
+						"kush@gmail.com"),
+				new Contact("Luv", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989", "854523200",
+						"luv@gmail.com"),
+				new Contact("Mohan", "Kumar", "Sijua, dhanbad", "dhanbad", "jharkhand", "898989", "854523200",
+						"mohan@gmail.com") };
+		return Arrays.asList(contacts);
 	}
 
 	private Response addContactToJsonServer(Contact contact) {

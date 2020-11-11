@@ -2,8 +2,8 @@ package com.capgemini.jdbc.addressbook;
 
 public class Contact {
 	private String address_book_name;
-	private int address_book_id;
-	private int contact_id;
+	private Integer address_book_id;
+	private Integer contact_id;
 	private String first_name;
 	private String last_name;
 	private String phone_number;
